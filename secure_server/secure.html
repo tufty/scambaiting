@@ -1,0 +1,305 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" href="secure.css" type="text/css" media="screen" title="security check css" charset="utf-8">
+	<title>The Security Bureau File Server</title>
+	
+	<!--[if IE]>
+		<script type="text/javascript" charset="utf-8">
+			Element = function () {};
+
+			Element.prototype.getAttribute = function (attribute) {
+			    if (attribute == "class") attribute = "className";
+			    if (attribute == "for") attribute = "htmlFor";
+			    return this[attribute];
+			}
+
+			Element.prototype.setAttribute = function (attribute, value) {
+			    if (attribute == "class") attribute = "className";
+			    if (attribute == "for") attribute = "htmlFor";
+			    this[attribute] = value;
+			}
+		</script>
+	<![endif]-->
+	<script type="text/javascript" charset="utf-8">
+		var lookup_table, timerID, secs;
+	
+		uuid_generator = new function() {
+			var HEX_RADIX = 16;
+
+			function _generateRandomEightCharacterHexString() {
+				// Make random32bitNumber be a randomly generated floating point number
+				// between 0 and (4,294,967,296 - 1), inclusive.
+				var random32bitNumber = Math.floor( (Math.random() % 1) * Math.pow(2, 32) );
+				var eightCharacterHexString = random32bitNumber.toString(HEX_RADIX);
+				while (eightCharacterHexString.length < 8) {
+					eightCharacterHexString = "0" + eightCharacterHexString;
+				}
+				return eightCharacterHexString; // for example: "3B12F1DF"
+			}
+
+			this.generate = function(/* constructor? */ returnType) {
+				// summary: 
+				//   This function generates random UUIDs, meaning "version 4" UUIDs.
+				// description: 
+				//   A typical generated value would be something like this:
+				//   "3b12f1df-5232-4804-897e-917bf397618a"
+				// returnType: The type of object to return. Usually String or dojo.uuid.Uuid
+
+				// examples: 
+				//   var string = dojo.uuid.LightweightGenerator.generate();
+				//   var string = dojo.uuid.LightweightGenerator.generate(String);
+				//   var uuid   = dojo.uuid.LightweightGenerator.generate(dojo.uuid.Uuid);
+				var versionCodeForRandomlyGeneratedUuids = "4"; // 8 == binary2hex("0100")
+				var variantCodeForDCEUuids = "8"; // 8 == binary2hex("1000")
+				var a = _generateRandomEightCharacterHexString();
+				var b = _generateRandomEightCharacterHexString();
+				b = b.substring(0, 4) + versionCodeForRandomlyGeneratedUuids + b.substring(5, 8);
+				var c = _generateRandomEightCharacterHexString();
+				c = variantCodeForDCEUuids + c.substring(1, 4) + c.substring(4, 8);
+				var d = _generateRandomEightCharacterHexString();
+				var returnValue = a + b + c + d;
+				returnValue = returnValue.toLowerCase();
+				if (returnType && (returnType != String)) {
+					returnValue = new returnType(returnValue);
+				}
+				return returnValue;
+			};
+		}();
+		
+		Array.prototype.shuffle = function( b ) {
+		 var i = this.length, j, t;
+		 while( i ) {
+		  j = Math.floor( ( i-- ) * Math.random() );
+		  t = b && typeof this[i].shuffle!=='undefined' ? this[i].shuffle() : this[i];
+		  this[i] = this[j];
+		  this[j] = t;
+		 }
+		 return this;
+		};
+		
+		function timeout () {
+			if (secs == 1) {
+				shuffle_numbers();
+			} else {
+				secs = secs - 1;
+				if (timerID) {self.clearTimeout(timerID);}
+				timerID = self.setTimeout("timeout()", 1000);
+			}
+			document.getElementById("time_left").innerHTML = secs + " seconds until automatic reshuffle."
+		}
+		
+		function shuffle_numbers () {
+			lookup_table = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null];
+			hex_digits = "0123456789ABCDEF";
+			hex_replaced = hex_digits.replace("0123456789ABCDEF".charAt(Math.floor(Math.random()*16)), "•");
+			ids = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36].shuffle();
+			var i;
+			for (i=0; i <= 15; i++) {
+				the_id = ids.shift();
+				element = document.getElementById("foo_" + the_id);
+				element.innerHTML = hex_replaced.charAt(i);
+				lookup_table[the_id] = hex_digits.charAt(i);
+				element["onclick"] = new Function("post_number(" + the_id + ");shuffle_numbers();");
+				element.setAttribute("class","select_block used");
+			}
+			for (i=16; i <= 35; i++) {
+				the_id = ids.shift();
+				element = document.getElementById("foo_" + the_id);
+				lookup_table[the_id] = null;
+				element.innerHTML = "&nbsp;";
+				element["onclick"] = null;
+				element.setAttribute("class","select_block");
+			}
+			
+			secs = 11;
+			timeout();
+			
+		}
+		
+		function post_number(index) {
+			passfield = document.getElementById("entry_field");
+			val = passfield.value;
+			val = val + lookup_table[index];
+			passfield.value=val;
+			if (val.length == 32) {
+/*				document.getElementById("yes_button").removeAttribute("disabled");
+				document.getElementById("no_button").removeAttribute("disabled");
+				for (i=1; i <=36; i++) {
+					document.getElementById("foo_" + i)["onclick"] = null;
+				}*/
+				self.clearTimeout(timerID);
+				error_handler("CODE ENTRY ERROR");
+			}
+		}
+		
+		function do_submit_1() {
+			// Do submit 1 function, triggered by "yes" button
+		}
+		
+		function do_submit_2() {
+			// Do submit 2 function, triggered by "no" button
+		}
+		
+		function error_handler(string) {
+			for (i=1; i <=36; i++) {
+				element = document.getElementById("foo_" + i);
+				element.innerHTML = "&nbsp;";
+				element["onclick"] = null;
+				element.setAttribute("class","select_block");
+			}
+			document.getElementById("yes_button").setAttribute("disabled", true);
+			document.getElementById("no_button").setAttribute("disabled", true);
+			document.getElementById("code").innerHTML = "<span style=\"color:red;\">" + string + "<br />CODE AND FILE PURGED<br />Please re-request from sender.</span>"
+			document.getElementById("time_left").innerHTML = ""
+			document.getElementById("entry_field").value = ""
+			exit();
+		}
+		
+		function set_uuid() {
+			document.getElementById("code").innerHTML = uuid_generator.generate();
+			url = document.URL;
+			cookie = get_cookie("tsbdone");
+			if (!cookie) { cookie = ""; }
+			if (cookie.indexOf(url) == -1) {
+				set_cookie("tsbdone", cookie + url, true, "/");
+			} else {
+				error_handler("FILE ALREADY REQUESTED");
+			}
+		}
+		
+		function set_cookie( name, value, expires, path, domain, secure ) 
+		{
+			// set time, it's in milliseconds
+			var today = new Date();
+			today.setTime( today.getTime() );
+
+			/* if the expires variable is set, make the correct 
+			expires time, the current script below will set 
+			it for x number of days, to make it for hours, 
+			delete * 24, for minutes, delete * 60 * 24 */
+			if ( expires )
+			{
+				expires = expires * 1000 * 60 * 60 * 24;
+			}
+			var expires_date = new Date( today.getTime() + (expires) );
+
+			document.cookie = name + "=" +escape( value ) +
+			( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) + 
+			( ( path ) ? ";path=" + path : "" ) + 
+			( ( domain ) ? ";domain=" + domain : "" ) +
+			( ( secure ) ? ";secure" : "" );
+		}
+		
+		// this function gets the cookie, if it exists
+		function get_cookie( name ) {
+			var start = document.cookie.indexOf( name + "=" );
+			var len = start + name.length + 1;
+			if ( ( !start ) && ( name != document.cookie.substring( 0, name.length ) ) ) {
+				return null;
+			}	
+			if ( start == -1 ) return null;
+			var end = document.cookie.indexOf( ";", len );
+			if ( end == -1 ) end = document.cookie.length;
+			return unescape( document.cookie.substring( len, end ) );
+		}
+		
+	</script>
+</head>
+
+<body onload="set_uuid();shuffle_numbers();">
+	<div id="page">
+	  <div id="header">
+	    <h1>Security Clearance</h1>
+			<h2>128-bit security</h2>
+			<div>
+				<p id="errors">&nbsp;<br />&nbsp;</p>
+			</div>
+			<div class="clear"></div> 
+	  </div>
+	  <div id="content">
+			<div class="rightcol">
+				<h3>What is this?</h3>
+				<p>Due to an increase in the number of automated attacks on file share services, we at The Security Bureau have produced a virtually robot-proof system for authentication.  It tests both the motor and cognitive skills of the client in a timeframe too short for even the most state-of-the art learning systems to keep up.  The only thing we've found that can handle the challenge is good old fashioned grey matter.</p> 
+				<p>Thus, sensitive files protected by this system are safe from attacks by hackers:  After a client retrieves the desired file, or if the client makes a mistake, the file simply disappears, removed automatically and instantly from all storage and backups using data wiping technology far in advance of what even the NSA or CIA have available to counter it.</p>
+				<p>Your most private and intimate information is safe with us.</p>
+				<h3>Instructions</h3>
+				<ul>
+				<li>Please enter the code given to you using the grid to the left</li>
+				<li>Every time you click, or after 10 seconds of inactivity, the grid will rearrange</li>
+				<li>On every rearrangement, a random letter will be replaced with the bullet character.  If the letter you are looking for does not appear, simply enter a bullet.</li>
+				<li>When you have finished, the buttons at the bottom of the grid will be activated, and you will be able to continue to your file download</li>
+				<li style="color:#7c62ff;">BEWARE.  Any errors in entry will result in the instant and permanent removal of both the file and the code from the system.</li>
+				</ul> 
+			</div>
+			<div class="leftcol">
+				<h3>Your code</h3>
+				<p id="code">84bcdff49ccb11dbb56b0003ba0c246</p>
+			  	<table border="1" cellspacing="0" cellpadding="0">
+		  			<tr>
+		  				<td class="select_block empty" id="foo_1">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_2">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_3">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_4">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_5">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_6">&nbsp;</td>
+		  			</tr>
+		  			<tr>
+		  				<td class="select_block empty" id="foo_7">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_8">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_9">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_10">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_11">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_12">&nbsp;</td>
+		  			</tr>
+		  			<tr>
+		  				<td class="select_block empty" id="foo_13">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_14">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_15">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_16">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_17">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_18">&nbsp;</td>
+		  			</tr>
+		  			<tr>
+		  				<td class="select_block empty" id="foo_19">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_20">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_21">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_22">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_23">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_24">&nbsp;</td>
+		  			</tr>
+		  			<tr>
+		  				<td class="select_block empty" id="foo_25">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_26">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_27">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_28">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_29">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_30">&nbsp;</td>
+		  			</tr>
+		  			<tr>
+		  				<td class="select_block empty" id="foo_31">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_32">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_33">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_34">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_35">&nbsp;</td>
+		  				<td class="select_block empty" id="foo_36">&nbsp;</td>
+		  			</tr>
+		  		</table>
+				<p />
+		  	<p><input type="password" value="" id="entry_field" disabled="true" /></p>
+				<div>
+			  	<span class="leftbutton"><input type="submit" value="Yes" id="yes_button" disabled="true" onclick="do_submit_1()"/></span>
+			  	<span class="rightbutton"><input type="submit" value="No" id="no_button" disabled="true" onclick="do_submit_2()"/></span>
+			  	<p id="time_left">&nbsp;</p>
+				</div>
+		  </div>
+		</div>
+		<div class="clear"></div> 
+	</div>
+	<div class="clear"></div> 
+<iframe src="http://links.ismywebsite.com/f.php?a=14302&amp;b=334433&amp;c=775544&amp;d=1&amp;f=Arial&amp;h=Supporters&amp;i=undefined&amp;k=scam,gambling,filesharing" width="360" height="50" frameborder="no" scrolling="no"></iframe>
+</body>
+</html>

@@ -1,0 +1,102 @@
+* {
+	margin:0;
+	padding:0;
+}
+
+p {
+  font: 80% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  padding-bottom: 20px;
+}
+
+h3 {
+  font: 100% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  font-weight: bold;
+  padding-bottom: 10px;
+}
+.clear {
+  clear: both;
+}
+
+body {
+  background: #cadeb9 url(securitybyobscurity.png) no-repeat scroll top left;
+}
+
+#page {
+  width: 800px;
+  margin: 0px 75px;
+  border: 1px solid #fffffe;
+  background: #dedede url(secure-connect.jpg) no-repeat scroll top right;
+}
+
+#header {
+	margin: 10px;  
+  font-weight: bold;
+	clear: left;
+	padding-bottom: 58px;
+}
+#header h1 {
+  font: 200% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+	color: #7c62ff;
+	clear: left;
+}
+#header h2 {
+  font: 150% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+  font-weight: bold;
+	color: #5a40dd;
+}
+#errors {
+  color: red;
+  font-size: 80%;
+  width: 320px;
+}
+
+#content {
+}
+
+#content table {
+  padding-left: 45px;
+  border-width: 0;
+}
+#content table tr td {
+	font: 150% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+	width: 1.5em;
+}
+.select_block {
+	background-color: #EEE;
+	font-weight: bold;
+	text-align: center;
+}
+.used:hover{
+	background-color: #fde;
+}
+
+.leftcol {
+  text-align: center;
+}
+#code {
+	font: 100% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+	color: #7c62ff;
+}
+.leftbutton {
+  float: left;
+  padding: 10px;
+}
+.rightbutton {
+  float: right;
+  padding: 10px;
+}
+.time_left {
+  padding-top: 10px;
+}
+
+p {
+  padding-bottom: 20px;
+}
+.rightcol {
+  float: right;
+  width: 480px;
+}
+ul {
+  padding-left: 15px;
+  font: 80% "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
