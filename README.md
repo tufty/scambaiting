@@ -1,0 +1,4 @@
+scambaiting
+===========
+
+Tools for scambaiting
